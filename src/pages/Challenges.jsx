@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Target, Sparkles, Filter, SlidersHorizontal, RotateCcw } from "lucide-react";
+import { Target } from "lucide-react";
 import { CHALLENGES_DATA } from "../data/challenges";
 import ChallengeCard from "../components/ChallengeCard";
 import SearchBar from "../components/SearchBar";
@@ -47,7 +47,6 @@ export default function Challenges() {
   // Filter & Search Logic
   const filteredChallenges = useMemo(() => {
     return CHALLENGES_DATA.filter((challenge) => {
-      // 1. Search Query (Matches title, description, or tags)
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
         const matchesTitle = challenge.title.toLowerCase().includes(query);
@@ -59,25 +58,16 @@ export default function Challenges() {
         }
       }
 
-      // 2. Category Filter
       if (selectedCategory !== "All Categories") {
-        if (challenge.category !== selectedCategory) {
-          return false;
-        }
+        if (challenge.category !== selectedCategory) return false;
       }
 
-      // 3. Difficulty Filter
       if (selectedDifficulty !== "All Difficulties") {
-        if (challenge.difficulty !== selectedDifficulty) {
-          return false;
-        }
+        if (challenge.difficulty !== selectedDifficulty) return false;
       }
 
-      // 4. Status Filter (Lifecycle status)
       if (selectedStatus !== "All Statuses") {
-        if (challenge.status !== selectedStatus) {
-          return false;
-        }
+        if (challenge.status !== selectedStatus) return false;
       }
 
       return true;
@@ -85,7 +75,7 @@ export default function Challenges() {
       if (sortBy === "points-desc") return b.points - a.points;
       if (sortBy === "points-asc") return a.points - b.points;
       if (sortBy === "deadline") return new Date(a.deadline) - new Date(b.deadline);
-      return 0; // 'featured' retains natural priority order
+      return 0;
     });
   }, [searchQuery, selectedCategory, selectedDifficulty, selectedStatus, sortBy]);
 
@@ -106,32 +96,31 @@ export default function Challenges() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6">
       {/* Header */}
       <div>
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-            <Target className="w-5 h-5" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-teal-50 text-accent">
+            <Target className="w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary">
               Challenge Catalog
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Explore university challenges, test your architectural mettle, and ship real code.
+            <p className="text-xs text-text-secondary">
+              Explore challenges, test your skills, and ship real code.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Search & Filter Controls */}
-      <div className="space-y-4">
+      {/* Search & Filter */}
+      <div className="space-y-3">
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
-          placeholder="Search by keywords (e.g. AI, React, Lost & Found, Docker, Portal)..."
+          placeholder="Search by keywords (e.g. AI, React, Docker, Portal)..."
         />
-
         <FilterBar
           selectedCategory={selectedCategory}
           onSelectCategory={(cat) => {
@@ -168,17 +157,17 @@ export default function Challenges() {
         />
       </div>
 
-      {/* Challenge Cards Grid or Empty State */}
+      {/* Grid */}
       {filteredChallenges.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredChallenges.map((challenge) => (
             <ChallengeCard key={challenge.id} challenge={challenge} />
           ))}
         </div>
       ) : (
         <EmptyState
-          title="No challenges matched your criteria"
-          description="Try broadening your search query or resetting active category, difficulty, and status filters."
+          title="No challenges matched"
+          description="Try broadening your search or resetting filters."
           onReset={handleResetFilters}
           resetLabel="Clear all filters"
         />

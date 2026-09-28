@@ -19,10 +19,10 @@ export default function StatusBadge({ status, type = "participant", size = "sm" 
       case "In Progress":
         return (
           <span
-            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 ${sizeClasses}`}
+            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-amber-50 text-amber-700 border border-amber-200 ${sizeClasses}`}
             title="Challenge In Progress"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
             <PlayCircle className="w-3.5 h-3.5" />
             <span>In Progress</span>
           </span>
@@ -30,7 +30,7 @@ export default function StatusBadge({ status, type = "participant", size = "sm" 
       case "Submitted":
         return (
           <span
-            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 ${sizeClasses}`}
+            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200 ${sizeClasses}`}
             title="Solution Submitted"
           >
             <Send className="w-3.5 h-3.5" />
@@ -40,7 +40,7 @@ export default function StatusBadge({ status, type = "participant", size = "sm" 
       case "Completed":
         return (
           <span
-            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 ${sizeClasses}`}
+            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 ${sizeClasses}`}
             title="Challenge Completed"
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -51,7 +51,7 @@ export default function StatusBadge({ status, type = "participant", size = "sm" 
       default:
         return (
           <span
-            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-slate-800 text-slate-400 border border-slate-700/60 ${sizeClasses}`}
+            className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-stone-100 text-stone-500 border border-stone-200 ${sizeClasses}`}
             title="Not Started"
           >
             <Clock className="w-3.5 h-3.5" />
@@ -66,12 +66,12 @@ export default function StatusBadge({ status, type = "participant", size = "sm" 
     case "Active":
       return (
         <span
-          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 ${sizeClasses}`}
+          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 ${sizeClasses}`}
           title="Active Challenge — Open for submissions"
         >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
           </span>
           <span>Active</span>
         </span>
@@ -79,27 +79,27 @@ export default function StatusBadge({ status, type = "participant", size = "sm" 
     case "Upcoming":
       return (
         <span
-          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 ${sizeClasses}`}
+          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-teal-50 text-teal-700 border border-teal-200 ${sizeClasses}`}
           title="Upcoming Challenge — Opens soon"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+          <Sparkles className="w-3.5 h-3.5" />
           <span>Upcoming</span>
         </span>
       );
     case "Completed":
       return (
         <span
-          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 ${sizeClasses}`}
+          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-stone-100 text-stone-500 border border-stone-200 ${sizeClasses}`}
           title="Challenge Closed — Historical archive"
         >
-          <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" />
+          <CheckCircle2 className="w-3.5 h-3.5" />
           <span>Closed</span>
         </span>
       );
     default:
       return (
         <span
-          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-slate-800 text-slate-300 border border-slate-700 ${sizeClasses}`}
+          className={`inline-flex items-center gap-1.5 font-medium rounded-full bg-stone-100 text-stone-500 border border-stone-200 ${sizeClasses}`}
         >
           <AlertCircle className="w-3.5 h-3.5" />
           <span>{status}</span>

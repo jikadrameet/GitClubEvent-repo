@@ -1,54 +1,35 @@
 import React from "react";
 
-export default function StatCard({ title, value, subtitle, icon: Icon, color = "indigo", badge }) {
+export default function StatCard({ title, value, subtitle, icon: Icon, color = "teal", badge }) {
   const colorMap = {
-    indigo: {
-      bg: "bg-indigo-500/10",
-      text: "text-indigo-400",
-      border: "border-indigo-500/20"
-    },
-    emerald: {
-      bg: "bg-emerald-500/10",
-      text: "text-emerald-400",
-      border: "border-emerald-500/20"
-    },
-    amber: {
-      bg: "bg-amber-500/10",
-      text: "text-amber-400",
-      border: "border-amber-500/20"
-    },
-    sky: {
-      bg: "bg-sky-500/10",
-      text: "text-sky-400",
-      border: "border-sky-500/20"
-    },
-    purple: {
-      bg: "bg-purple-500/10",
-      text: "text-purple-400",
-      border: "border-purple-500/20"
-    }
+    teal: { bg: "bg-teal-50", text: "text-teal-700", border: "border-teal-200" },
+    emerald: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+    amber: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
+    sky: { bg: "bg-sky-50", text: "text-sky-700", border: "border-sky-200" },
+    purple: { bg: "bg-violet-50", text: "text-violet-700", border: "border-violet-200" },
+    indigo: { bg: "bg-teal-50", text: "text-teal-700", border: "border-teal-200" },
   };
 
-  const scheme = colorMap[color] || colorMap.indigo;
+  const scheme = colorMap[color] || colorMap.teal;
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg backdrop-blur transition-all duration-200 hover:border-slate-700 hover:shadow-indigo-500/5">
+    <div className="bg-white border border-border-primary rounded-lg p-4 transition-all duration-150 hover:border-border-secondary">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{title}</p>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold tracking-tight text-white">{value}</span>
+          <p className="text-[11px] font-medium uppercase tracking-wider text-text-tertiary">{title}</p>
+          <div className="mt-1.5 flex items-baseline gap-2">
+            <span className="text-xl font-bold tracking-tight text-text-primary">{value}</span>
             {badge && (
-              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${scheme.bg} ${scheme.text} border ${scheme.border}`}>
+              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${scheme.bg} ${scheme.text}`}>
                 {badge}
               </span>
             )}
           </div>
-          {subtitle && <p className="mt-1 text-xs text-slate-400">{subtitle}</p>}
+          {subtitle && <p className="mt-0.5 text-[11px] text-text-tertiary">{subtitle}</p>}
         </div>
         {Icon && (
-          <div className={`rounded-lg p-2.5 ${scheme.bg} ${scheme.text} border ${scheme.border}`}>
-            <Icon className="w-5 h-5" />
+          <div className={`rounded-md p-2 ${scheme.bg} ${scheme.text}`}>
+            <Icon className="w-4 h-4" />
           </div>
         )}
       </div>

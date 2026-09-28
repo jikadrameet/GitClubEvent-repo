@@ -25,7 +25,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <div className="min-h-screen flex flex-col bg-[#090D16] text-slate-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+      <div className="min-h-screen flex flex-col bg-surface text-text-primary font-sans">
         <Navbar />
         <main className="flex-grow">
           <Routes>
