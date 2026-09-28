@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Calendar, Award, ArrowRight, Users, Clock } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import DifficultyBadge from "./DifficultyBadge";
@@ -10,7 +11,10 @@ export default function ChallengeCard({ challenge }) {
   const participantStatus = getChallengeParticipantStatus(challenge.id);
 
   return (
-    <div className="group relative flex flex-col justify-between bg-white border border-border-primary rounded-lg p-5 transition-all duration-200 hover:border-border-secondary hover:shadow-sm">
+    <motion.div 
+      whileHover={{ y: -4, boxShadow: "0 8px 16px rgba(0,0,0,0.06)" }}
+      className="group relative flex h-full flex-col justify-between bg-white border border-border-primary rounded-lg p-5 transition-colors duration-200 hover:border-border-secondary"
+    >
       {/* Top: Category & Status */}
       <div>
         <div className="flex items-center justify-between gap-2">
@@ -98,9 +102,9 @@ export default function ChallengeCard({ challenge }) {
               ? "View Solution"
               : "View Challenge"}
           </span>
-          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Rocket,
   Code2,
@@ -16,6 +17,23 @@ import { CHALLENGES_DATA } from "../data/challenges";
 import ChallengeCard from "../components/ChallengeCard";
 import StatCard from "../components/StatCard";
 import { getParticipantStats, resetParticipantProgress } from "../utils/storage";
+
+// Framer Motion Variants
+const pageVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.1 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
+};
+
+const sectionVariants = {
+  initial: { opacity: 0, y: 15 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
+const itemVariants = {
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" } }
+};
 
 export default function Home() {
   const [stats, setStats] = useState(getParticipantStats());
@@ -45,23 +63,38 @@ export default function Home() {
   const upcomingChallenges = CHALLENGES_DATA.filter((c) => c.status === "Upcoming");
 
   return (
-    <div className="space-y-14 pb-16">
+    <motion.div 
+      className="space-y-14 pb-16"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {/* Reset toast */}
       {resetMessage && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-md bg-accent px-4 py-3 text-xs font-semibold text-white shadow-lg flex items-center gap-2 animate-fade-in">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="fixed bottom-6 right-6 z-50 rounded-md bg-accent px-4 py-3 text-xs font-semibold text-white shadow-lg flex items-center gap-2"
+        >
           <RotateCcw className="w-4 h-4" />
           <span>Progress restored to default!</span>
-        </div>
+        </motion.div>
       )}
 
-      {/* HERO SECTION — Clean, purposeful, no ambient glows */}
-      <section className="pt-12 sm:pt-20 pb-4">
+      {/* HERO SECTION */}
+      <motion.section variants={sectionVariants} className="pt-12 sm:pt-20 pb-4">
         <div className="mx-auto max-w-4xl text-center px-4">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-md bg-teal-50 px-3 py-1.5 text-xs font-semibold text-accent border border-teal-200 mb-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ delay: 0.1, duration: 0.4 }}
+            className="inline-flex items-center gap-2 rounded-md bg-teal-50 px-3 py-1.5 text-xs font-semibold text-accent border border-teal-200 mb-6"
+          >
             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Problem Statement 4 · Git Club CHARUSAT</span>
-          </div>
+          </motion.div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-text-primary leading-tight">
             Challenge Arena
@@ -75,11 +108,10 @@ export default function Home() {
             Tackle real-world challenges, submit repositories, and rise up the campus leaderboard.
           </p>
 
-          {/* CTAs */}
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/challenges"
-              className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-dark transition-colors"
+              className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-dark transition-all hover:-translate-y-0.5 active:scale-95"
             >
               <Rocket className="w-4 h-4" />
               <span>Explore Challenges</span>
@@ -88,35 +120,41 @@ export default function Home() {
 
             <Link
               to="/leaderboard"
-              className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-text-primary border border-border-primary hover:bg-surface-sunken transition-colors"
+              className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-semibold text-text-primary border border-border-primary hover:bg-surface-sunken transition-all hover:-translate-y-0.5 active:scale-95"
             >
               <Trophy className="w-4 h-4 text-warning" />
               <span>View Leaderboard</span>
             </Link>
           </div>
 
-          {/* Pillars — simple inline list, not floating cards */}
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto text-left">
+          <motion.div 
+            variants={sectionVariants}
+            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto text-left"
+          >
             {[
               { icon: Code2, label: "Real Campus Tasks", desc: "Tailored for CHARUSAT", color: "text-accent" },
               { icon: GitPullRequest, label: "Git First", desc: "Clean commits & docs", color: "text-emerald-600" },
               { icon: Trophy, label: "Live Ranking", desc: "Cross-department competition", color: "text-warning" },
               { icon: Terminal, label: "Simulated Submissions", desc: "Browser persistence", color: "text-sky-600" },
             ].map(({ icon: Icon, label, desc, color }) => (
-              <div key={label} className="rounded-md border border-border-primary bg-white p-3">
+              <motion.div 
+                key={label}
+                whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}
+                className="rounded-md border border-border-primary bg-white p-3 transition-colors duration-200"
+              >
                 <div className={`flex items-center gap-1.5 ${color} text-xs font-semibold`}>
                   <Icon className="w-3.5 h-3.5" />
                   <span>{label}</span>
                 </div>
                 <p className="mt-1 text-[11px] text-text-tertiary">{desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* PROGRESS SECTION */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6" id="my-progress">
+      <motion.section variants={sectionVariants} className="mx-auto max-w-6xl px-4 sm:px-6" id="my-progress">
         <div className="rounded-lg border border-border-primary bg-white p-6 sm:p-7">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-5 border-b border-border-primary">
             <div>
@@ -136,7 +174,7 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleReset}
-                className="inline-flex items-center gap-1.5 rounded-md bg-surface-sunken px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-border-primary hover:text-text-primary transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-md bg-surface-sunken px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-border-primary hover:text-text-primary transition-colors active:scale-95"
                 title="Reset local participant data"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-text-tertiary" />
@@ -144,7 +182,7 @@ export default function Home() {
               </button>
               <Link
                 to="/leaderboard"
-                className="inline-flex items-center gap-1.5 rounded-md bg-teal-50 px-3 py-1.5 text-xs font-semibold text-accent border border-teal-200 hover:bg-teal-100 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-md bg-teal-50 px-3 py-1.5 text-xs font-semibold text-accent border border-teal-200 hover:bg-teal-100 transition-colors active:scale-95"
               >
                 <span>Standings</span>
                 <ArrowRight className="w-3 h-3" />
@@ -152,57 +190,35 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Stats grid */}
-          <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <StatCard
-              title="Total Score"
-              value={`${stats.totalPoints} pts`}
-              subtitle="Arena points"
-              icon={Trophy}
-              color="amber"
-              badge="Top 10%"
-            />
-            <StatCard
-              title="Done"
-              value={`${stats.completedCount + stats.submittedCount}`}
-              subtitle={`${stats.completedCount} verified · ${stats.submittedCount} review`}
-              icon={CheckCircle2}
-              color="emerald"
-            />
-            <StatCard
-              title="In Progress"
-              value={`${stats.inProgressCount}`}
-              subtitle="Active challenges"
-              icon={PlayCircle}
-              color="teal"
-            />
-            <StatCard
-              title="Completion"
-              value={`${stats.completionPercentage}%`}
-              subtitle={`${stats.completedCount + stats.submittedCount} of ${stats.totalAvailableChallenges}`}
-              icon={Rocket}
-              color="sky"
-            />
-          </div>
+          <motion.div 
+            className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3"
+            variants={sectionVariants}
+          >
+            <StatCard title="Total Score" value={`${stats.totalPoints} pts`} subtitle="Arena points" icon={Trophy} color="amber" badge="Top 10%" />
+            <StatCard title="Done" value={`${stats.completedCount + stats.submittedCount}`} subtitle={`${stats.completedCount} verified · ${stats.submittedCount} review`} icon={CheckCircle2} color="emerald" />
+            <StatCard title="In Progress" value={`${stats.inProgressCount}`} subtitle="Active challenges" icon={PlayCircle} color="teal" />
+            <StatCard title="Completion" value={`${stats.completionPercentage}%`} subtitle={`${stats.completedCount + stats.submittedCount} of ${stats.totalAvailableChallenges}`} icon={Rocket} color="sky" />
+          </motion.div>
 
-          {/* Progress bar */}
           <div className="mt-5 rounded-md bg-surface-sunken p-3">
             <div className="flex items-center justify-between text-xs mb-2">
               <span className="text-text-secondary font-medium">Challenge Roadmap</span>
               <span className="text-accent font-bold">{stats.completionPercentage}%</span>
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-border-primary">
-              <div
-                className="h-full bg-accent transition-all duration-500 ease-out rounded-full"
-                style={{ width: `${Math.max(stats.completionPercentage, 5)}%` }}
-              ></div>
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.max(stats.completionPercentage, 5)}%` }}
+                transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                className="h-full bg-accent rounded-full"
+              ></motion.div>
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ACTIVE CHALLENGES */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+      <motion.section variants={sectionVariants} className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mb-5">
           <div>
             <div className="flex items-center gap-2">
@@ -225,15 +241,20 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <motion.div 
+          variants={sectionVariants} 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
           {activeChallenges.slice(0, 3).map((challenge) => (
-            <ChallengeCard key={challenge.id} challenge={challenge} />
+            <motion.div key={challenge.id} variants={itemVariants}>
+              <ChallengeCard challenge={challenge} />
+            </motion.div>
           ))}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* UPCOMING */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+      <motion.section variants={sectionVariants} className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 mb-5">
           <div>
             <div className="flex items-center gap-2">
@@ -253,15 +274,20 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <motion.div 
+          variants={sectionVariants}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
           {upcomingChallenges.slice(0, 3).map((challenge) => (
-            <ChallengeCard key={challenge.id} challenge={challenge} />
+            <motion.div key={challenge.id} variants={itemVariants}>
+              <ChallengeCard challenge={challenge} />
+            </motion.div>
           ))}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
-      {/* HOW IT WORKS — Timeline, not cards */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+      {/* HOW IT WORKS */}
+      <motion.section variants={sectionVariants} className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="rounded-lg border border-border-primary bg-white p-7">
           <div className="text-center max-w-xl mx-auto mb-8">
             <span className="text-xs font-semibold uppercase tracking-wider text-accent">How it works</span>
@@ -273,27 +299,35 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <motion.div 
+            variants={sectionVariants}
+            className="grid grid-cols-1 md:grid-cols-4 gap-4"
+          >
             {[
               { step: "01", title: "Discover & Filter", desc: "Browse by category, difficulty, and tech stack." },
               { step: "02", title: "Inspect & Start", desc: "Read requirements, judging criteria, then begin." },
               { step: "03", title: "Submit Solution", desc: "Link your GitHub repo and live preview." },
               { step: "04", title: "Climb Leaderboard", desc: "Earn points and recognition across campus." },
             ].map(({ step, title, desc }) => (
-              <div key={step} className="rounded-md border border-border-primary bg-surface-sunken p-4">
+              <motion.div 
+                key={step} 
+                variants={itemVariants}
+                whileHover={{ y: -2 }}
+                className="rounded-md border border-border-primary bg-surface-sunken p-4 transition-colors duration-200"
+              >
                 <div className="flex h-7 w-7 items-center justify-center rounded-md bg-accent/10 text-accent font-bold text-xs mb-2.5">
                   {step}
                 </div>
                 <h3 className="text-sm font-bold text-text-primary">{title}</h3>
                 <p className="mt-1 text-xs text-text-secondary leading-relaxed">{desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* FINAL CTA */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+      <motion.section variants={sectionVariants} className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="rounded-lg border border-teal-200 bg-teal-50 p-8 sm:p-10 text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">
             Ready to Build Your Next Milestone?
@@ -304,14 +338,14 @@ export default function Home() {
           <div className="mt-6 flex justify-center">
             <Link
               to="/challenges"
-              className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-2.5 text-sm font-bold text-white hover:bg-accent-dark transition-colors"
+              className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-2.5 text-sm font-bold text-white hover:bg-accent-dark transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Rocket className="w-4 h-4" />
               <span>Browse All Challenges</span>
             </Link>
           </div>
         </div>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }

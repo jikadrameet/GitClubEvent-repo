@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Trophy,
   Award,
@@ -12,6 +13,27 @@ import {
 } from "lucide-react";
 import { getDynamicLeaderboard, getParticipantStats } from "../utils/storage";
 import LeaderboardTable from "../components/LeaderboardTable";
+
+const pageVariants = {
+  initial: { opacity: 0, y: 15 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.1 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
+};
+
+const podiumContainerVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
+};
+
+const podiumItemVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } }
+};
+
+const sectionVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+};
 
 export default function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState(getDynamicLeaderboard());
@@ -61,9 +83,15 @@ export default function Leaderboard() {
   const departments = ["All", "CSPIT", "DEPSTAR", "CMPICA", "RPCP"];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-8">
+    <motion.div 
+      className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-8"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <motion.div variants={sectionVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div>
           <div className="inline-flex items-center gap-2 rounded-md bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 border border-amber-200 mb-2">
             <Trophy className="w-3.5 h-3.5" />
@@ -78,7 +106,7 @@ export default function Leaderboard() {
         </div>
 
         {/* Your rank */}
-        <div className="flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50 p-4">
+        <div className="flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50 p-4 transition-transform hover:-translate-y-0.5 hover:shadow-sm">
           <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent text-white font-bold text-sm">
             #{currentUser.rank}
           </div>
@@ -95,13 +123,20 @@ export default function Leaderboard() {
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Podium */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+      <motion.div 
+        variants={podiumContainerVariants}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2"
+      >
         {/* Silver */}
         {top2 && (
-          <div className="relative order-2 md:order-1 rounded-lg border border-border-primary bg-white p-5 text-center">
+          <motion.div 
+            variants={podiumItemVariants}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="relative order-2 md:order-1 rounded-lg border border-border-primary bg-white p-5 text-center transition-shadow hover:shadow-md"
+          >
             <div className="mx-auto -mt-9 mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-stone-100 text-stone-700 font-extrabold text-lg">
               🥈
             </div>
@@ -112,12 +147,16 @@ export default function Leaderboard() {
               <span className="text-text-tertiary">Done: {top2.challengesCompleted}</span>
               <span className="font-bold text-warning">{top2.points} pts</span>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Gold */}
         {top1 && (
-          <div className="relative order-1 md:order-2 rounded-lg border border-amber-200 bg-amber-50/50 p-5 text-center md:-translate-y-1">
+          <motion.div 
+            variants={podiumItemVariants}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="relative order-1 md:order-2 rounded-lg border border-amber-200 bg-amber-50/50 p-5 text-center md:-translate-y-1 transition-shadow hover:shadow-md"
+          >
             <div className="mx-auto -mt-10 mb-2 flex h-14 w-14 items-center justify-center rounded-xl bg-amber-100 text-amber-800 font-extrabold text-xl ring-2 ring-amber-200">
               🥇
             </div>
@@ -131,12 +170,16 @@ export default function Leaderboard() {
               <span className="text-text-secondary">Done: {top1.challengesCompleted}</span>
               <span className="font-extrabold text-warning text-sm">{top1.points} pts</span>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Bronze */}
         {top3 && (
-          <div className="relative order-3 rounded-lg border border-border-primary bg-white p-5 text-center">
+          <motion.div 
+            variants={podiumItemVariants}
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="relative order-3 rounded-lg border border-border-primary bg-white p-5 text-center transition-shadow hover:shadow-md"
+          >
             <div className="mx-auto -mt-9 mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100 text-orange-700 font-extrabold text-lg">
               🥉
             </div>
@@ -147,12 +190,12 @@ export default function Leaderboard() {
               <span className="text-text-tertiary">Done: {top3.challengesCompleted}</span>
               <span className="font-bold text-warning">{top3.points} pts</span>
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* Search & filter */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-lg border border-border-primary bg-white p-3">
+      <motion.div variants={sectionVariants} className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-lg border border-border-primary bg-white p-3">
         <div className="relative w-full sm:w-72">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary" />
           <input
@@ -160,30 +203,31 @@ export default function Leaderboard() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search participant..."
-            className="w-full rounded-md border border-border-primary bg-white py-2 pl-9 pr-4 text-xs text-text-primary placeholder-text-tertiary outline-none focus:border-accent focus:ring-1 focus:ring-accent/20"
+            className="w-full rounded-md border border-border-primary bg-white py-2 pl-9 pr-4 text-xs text-text-primary placeholder-text-tertiary outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all"
           />
         </div>
 
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto scrollbar-none">
           <span className="text-xs text-text-tertiary mr-1 hidden sm:inline">Institute:</span>
           {departments.map((dept) => (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               key={dept}
               onClick={() => setSelectedDept(dept)}
-              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-all ${
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 selectedDept === dept
                   ? "bg-accent text-white"
                   : "bg-surface-sunken text-text-secondary hover:bg-border-primary"
               }`}
             >
               {dept}
-            </button>
+            </motion.button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Table */}
-      <div className="space-y-3">
+      <motion.div variants={sectionVariants} className="space-y-3">
         <div className="flex items-center justify-between text-xs text-text-tertiary">
           <span>
             <strong className="text-text-primary">{filteredParticipants.length}</strong> participants
@@ -194,10 +238,13 @@ export default function Leaderboard() {
           </span>
         </div>
         <LeaderboardTable participants={filteredParticipants} />
-      </div>
+      </motion.div>
 
       {/* CTA */}
-      <div className="rounded-lg border border-border-primary bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <motion.div 
+        variants={sectionVariants} 
+        className="rounded-lg border border-border-primary bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4"
+      >
         <div>
           <h3 className="text-sm font-bold text-text-primary">Boost your standing</h3>
           <p className="text-xs text-text-secondary mt-0.5">
@@ -206,12 +253,12 @@ export default function Leaderboard() {
         </div>
         <Link
           to="/challenges"
-          className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-xs font-bold text-white hover:bg-accent-dark transition-colors flex-shrink-0"
+          className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-xs font-bold text-white hover:bg-accent-dark transition-all hover:scale-105 active:scale-95 flex-shrink-0"
         >
           <span>Find Challenges</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

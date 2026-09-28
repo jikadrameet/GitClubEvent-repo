@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Trophy, Award, Flame, CheckCircle } from "lucide-react";
 
 export default function LeaderboardTable({ participants }) {
@@ -31,6 +32,16 @@ export default function LeaderboardTable({ participants }) {
     }
   };
 
+  const tableVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { staggerChildren: 0.05 } }
+  };
+
+  const rowVariants = {
+    initial: { opacity: 0, x: -10 },
+    animate: { opacity: 1, x: 0, transition: { duration: 0.3 } }
+  };
+
   return (
     <div className="overflow-hidden rounded-lg border border-border-primary bg-white">
       <div className="overflow-x-auto">
@@ -45,12 +56,18 @@ export default function LeaderboardTable({ participants }) {
               <th scope="col" className="px-4 py-3 text-right">Score</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-primary">
+          <motion.tbody 
+            className="divide-y divide-border-primary"
+            variants={tableVariants}
+            initial="initial"
+            animate="animate"
+          >
             {participants.map((user) => {
               const isYou = user.isCurrentParticipant;
 
               return (
-                <tr
+                <motion.tr
+                  variants={rowVariants}
                   key={user.id}
                   className={`transition-colors duration-100 ${
                     isYou
@@ -125,10 +142,10 @@ export default function LeaderboardTable({ participants }) {
                       <span className="text-[11px] text-text-tertiary font-normal">pts</span>
                     </div>
                   </td>
-                </tr>
+                </motion.tr>
               );
             })}
-          </tbody>
+          </motion.tbody>
         </table>
       </div>
     </div>

@@ -1,12 +1,24 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Target } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { CHALLENGES_DATA } from "../data/challenges";
 import ChallengeCard from "../components/ChallengeCard";
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
 import EmptyState from "../components/EmptyState";
 import { getChallengeParticipantStatus } from "../utils/storage";
+
+const pageVariants = {
+  initial: { opacity: 0, y: 15 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.1 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
+};
+
+const itemVariants = {
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1, transition: { duration: 0.3, ease: "easeOut" } }
+};
 
 export default function Challenges() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -96,9 +108,15 @@ export default function Challenges() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6">
+    <motion.div 
+      className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {/* Header */}
-      <div>
+      <motion.div variants={itemVariants}>
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-teal-50 text-accent">
             <Target className="w-4 h-4" />
@@ -112,10 +130,10 @@ export default function Challenges() {
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Search & Filter */}
-      <div className="space-y-3">
+      <motion.div className="space-y-3" variants={itemVariants}>
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
@@ -155,23 +173,49 @@ export default function Challenges() {
           totalResults={filteredChallenges.length}
           isFiltered={isFiltered}
         />
-      </div>
+      </motion.div>
 
       {/* Grid */}
-      {filteredChallenges.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredChallenges.map((challenge) => (
-            <ChallengeCard key={challenge.id} challenge={challenge} />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          title="No challenges matched"
-          description="Try broadening your search or resetting filters."
-          onReset={handleResetFilters}
-          resetLabel="Clear all filters"
-        />
-      )}
-    </div>
+      <AnimatePresence mode="wait">
+        {filteredChallenges.length > 0 ? (
+          <motion.div 
+            key="grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { staggerChildren: 0.05 } }}
+            exit={{ opacity: 0 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            <AnimatePresence>
+              {filteredChallenges.map((challenge) => (
+                <motion.div 
+                  key={challenge.id} 
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ChallengeCard challenge={challenge} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        ) : (
+          <motion.div 
+            key="empty"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+          >
+            <EmptyState
+              title="No challenges matched"
+              description="Try broadening your search or resetting filters."
+              onReset={handleResetFilters}
+              resetLabel="Clear all filters"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

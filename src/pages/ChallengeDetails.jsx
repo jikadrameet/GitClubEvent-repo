@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Calendar,
@@ -27,6 +28,17 @@ import {
   getChallengeSubmission,
   startChallenge
 } from "../utils/storage";
+
+const pageVariants = {
+  initial: { opacity: 0, y: 15 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut", staggerChildren: 0.1 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } }
+};
+
+const itemVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+};
 
 export default function ChallengeDetails() {
   const { id } = useParams();
@@ -56,7 +68,12 @@ export default function ChallengeDetails() {
 
   if (!challenge) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="mx-auto max-w-2xl px-4 py-20 text-center"
+      >
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-red-50 text-error mb-4">
           <AlertCircle className="w-7 h-7" />
         </div>
@@ -66,12 +83,12 @@ export default function ChallengeDetails() {
         </p>
         <Link
           to="/challenges"
-          className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-accent-dark transition-colors"
+          className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-accent-dark transition-all active:scale-95"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Challenges</span>
         </Link>
-      </div>
+      </motion.div>
     );
   }
 
@@ -82,17 +99,30 @@ export default function ChallengeDetails() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6">
+    <motion.div 
+      className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       {/* Toast */}
-      {justStarted && (
-        <div className="fixed top-18 right-6 z-50 rounded-md bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg flex items-center gap-2 animate-fade-in">
-          <CheckCircle className="w-4 h-4" />
-          <span>Challenge started! Status: "In Progress".</span>
-        </div>
-      )}
+      <AnimatePresence>
+        {justStarted && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-18 right-6 z-50 rounded-md bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg flex items-center gap-2"
+          >
+            <CheckCircle className="w-4 h-4" />
+            <span>Challenge started! Status: "In Progress".</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-text-tertiary">
+      <motion.div variants={itemVariants} className="flex items-center gap-2 text-xs text-text-tertiary">
         <Link to="/challenges" className="hover:text-accent flex items-center gap-1 transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Challenges</span>
@@ -101,10 +131,10 @@ export default function ChallengeDetails() {
         <span className="text-text-secondary">{challenge.category}</span>
         <span>/</span>
         <span className="text-text-primary font-medium truncate max-w-xs">{challenge.title}</span>
-      </div>
+      </motion.div>
 
       {/* Header banner */}
-      <div className="rounded-lg border border-border-primary bg-white p-6 sm:p-7">
+      <motion.div variants={itemVariants} className="rounded-lg border border-border-primary bg-white p-6 sm:p-7">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
@@ -158,97 +188,130 @@ export default function ChallengeDetails() {
         <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-t border-border-primary pt-5">
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium text-text-tertiary">Status:</span>
-            <StatusBadge status={participantStatus} type="participant" size="md" />
+            <motion.div key={participantStatus} initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.3 }}>
+              <StatusBadge status={participantStatus} type="participant" size="md" />
+            </motion.div>
           </div>
 
           <div className="flex items-center gap-3">
-            {participantStatus === "Not Started" && (
-              <button
-                onClick={handleStart}
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-accent px-5 py-2 text-xs font-bold text-white hover:bg-accent-dark transition-colors"
-              >
-                <PlayCircle className="w-4 h-4" />
-                <span>Start Challenge</span>
-              </button>
-            )}
+            <AnimatePresence mode="wait">
+              {participantStatus === "Not Started" && (
+                <motion.button
+                  key="start"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleStart}
+                  className="inline-flex items-center justify-center gap-2 rounded-md bg-accent px-5 py-2 text-xs font-bold text-white hover:bg-accent-dark transition-colors"
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  <span>Start Challenge</span>
+                </motion.button>
+              )}
 
-            {participantStatus === "In Progress" && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-colors"
-              >
-                <Send className="w-4 h-4" />
-                <span>Submit Solution</span>
-              </button>
-            )}
+              {participantStatus === "In Progress" && (
+                <motion.button
+                  key="submit"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setIsModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-500 transition-colors"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Submit Solution</span>
+                </motion.button>
+              )}
 
-            {participantStatus === "Submitted" && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center justify-center gap-1.5 rounded-md bg-surface-sunken px-4 py-2 text-xs font-semibold text-text-primary hover:bg-border-primary transition-colors"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-accent" />
-                <span>Update Submission</span>
-              </button>
-            )}
+              {participantStatus === "Submitted" && (
+                <motion.button
+                  key="update"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => setIsModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-md bg-surface-sunken px-4 py-2 text-xs font-semibold text-text-primary hover:bg-border-primary transition-colors"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-accent" />
+                  <span>Update Submission</span>
+                </motion.button>
+              )}
 
-            {participantStatus === "Completed" && (
-              <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700 border border-emerald-200">
-                <CheckCircle className="w-4 h-4" />
-                <span>Completed (+{challenge.points} pts)</span>
-              </span>
-            )}
+              {participantStatus === "Completed" && (
+                <motion.span
+                  key="completed"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700 border border-emerald-200"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Completed (+{challenge.points} pts)</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Submission record */}
-      {submissionData && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle className="w-4 h-4 text-blue-600" />
-            <h3 className="text-sm font-bold text-blue-800">Your Submission</h3>
-            <span className="text-[10px] text-text-tertiary ml-auto">
-              {new Date(submissionData.submittedAt).toLocaleDateString()}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div className="rounded-md bg-white p-3 border border-blue-100">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block mb-1">Repository</span>
-              <a href={submissionData.repoUrl} target="_blank" rel="noopener noreferrer"
-                className="text-accent font-mono hover:underline flex items-center gap-1 break-all">
-                <span>{submissionData.repoUrl}</span>
-                <ExternalLink className="w-3 h-3 flex-shrink-0" />
-              </a>
+      <AnimatePresence>
+        {submissionData && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            className="rounded-lg border border-blue-200 bg-blue-50 p-5 overflow-hidden"
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <CheckCircle className="w-4 h-4 text-blue-600" />
+              <h3 className="text-sm font-bold text-blue-800">Your Submission</h3>
+              <span className="text-[10px] text-text-tertiary ml-auto">
+                {new Date(submissionData.submittedAt).toLocaleDateString()}
+              </span>
             </div>
-            {submissionData.demoUrl && (
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div className="rounded-md bg-white p-3 border border-blue-100">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block mb-1">Live Preview</span>
-                <a href={submissionData.demoUrl} target="_blank" rel="noopener noreferrer"
-                  className="text-sky-600 font-mono hover:underline flex items-center gap-1 break-all">
-                  <span>{submissionData.demoUrl}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block mb-1">Repository</span>
+                <a href={submissionData.repoUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-accent font-mono hover:underline flex items-center gap-1 break-all">
+                  <span>{submissionData.repoUrl}</span>
                   <ExternalLink className="w-3 h-3 flex-shrink-0" />
                 </a>
               </div>
-            )}
-          </div>
-
-          {submissionData.notes && (
-            <div className="mt-3 rounded-md bg-white p-3 border border-blue-100 text-xs">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block mb-1">Notes</span>
-              <p className="text-text-secondary italic">{submissionData.notes}</p>
+              {submissionData.demoUrl && (
+                <div className="rounded-md bg-white p-3 border border-blue-100">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block mb-1">Live Preview</span>
+                  <a href={submissionData.demoUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-sky-600 font-mono hover:underline flex items-center gap-1 break-all">
+                    <span>{submissionData.demoUrl}</span>
+                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                  </a>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
+
+            {submissionData.notes && (
+              <div className="mt-3 rounded-md bg-white p-3 border border-blue-100 text-xs">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary block mb-1">Notes</span>
+                <p className="text-text-secondary italic">{submissionData.notes}</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Content: 2 columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left */}
         <div className="lg:col-span-2 space-y-6">
           {/* Problem */}
-          <div className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
+          <motion.div variants={itemVariants} className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
             <div className="flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-accent" />
               <h2 className="text-base font-bold text-text-primary">Problem Statement</h2>
@@ -256,10 +319,10 @@ export default function ChallengeDetails() {
             <div className="text-sm leading-relaxed text-text-secondary whitespace-pre-line">
               {challenge.problemDescription}
             </div>
-          </div>
+          </motion.div>
 
           {/* Requirements */}
-          <div className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
+          <motion.div variants={itemVariants} className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
             <div className="flex items-center gap-2">
               <CheckSquare className="w-4 h-4 text-emerald-600" />
               <h2 className="text-base font-bold text-text-primary">Requirements</h2>
@@ -274,10 +337,10 @@ export default function ChallengeDetails() {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Rules */}
-          <div className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
+          <motion.div variants={itemVariants} className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-accent" />
               <h2 className="text-base font-bold text-text-primary">Rules & Guidelines</h2>
@@ -290,11 +353,11 @@ export default function ChallengeDetails() {
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
           {/* Judging */}
           {challenge.judgingCriteria && (
-            <div className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
+            <motion.div variants={itemVariants} className="rounded-lg border border-border-primary bg-white p-6 space-y-3">
               <div className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-warning" />
                 <h2 className="text-base font-bold text-text-primary">Evaluation Criteria</h2>
@@ -309,7 +372,7 @@ export default function ChallengeDetails() {
                   </thead>
                   <tbody className="divide-y divide-border-primary">
                     {challenge.judgingCriteria.map((c, i) => (
-                      <tr key={i} className="hover:bg-surface-sunken">
+                      <tr key={i} className="hover:bg-surface-sunken transition-colors">
                         <td className="px-4 py-2.5 font-medium text-text-primary">{c.aspect}</td>
                         <td className="px-4 py-2.5 text-right font-bold text-warning">{c.weight}</td>
                       </tr>
@@ -317,56 +380,80 @@ export default function ChallengeDetails() {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
 
         {/* Right sidebar */}
-        <div className="space-y-5">
+        <motion.div variants={itemVariants} className="space-y-5">
           <div className="rounded-lg border border-border-primary bg-white p-5 space-y-4 sticky top-20">
             <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
               Ready to take this on?
             </h3>
 
-            {participantStatus === "Not Started" && (
-              <button
-                onClick={handleStart}
-                className="w-full flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-2.5 text-xs font-bold text-white hover:bg-accent-dark transition-colors"
-              >
-                <PlayCircle className="w-4 h-4" />
-                <span>Start Challenge</span>
-              </button>
-            )}
-
-            {participantStatus === "In Progress" && (
-              <div className="space-y-2">
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-500 transition-colors"
+            <AnimatePresence mode="wait">
+              {participantStatus === "Not Started" && (
+                <motion.button
+                  key="start-sidebar"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleStart}
+                  className="w-full flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-2.5 text-xs font-bold text-white hover:bg-accent-dark transition-colors overflow-hidden"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Submit Solution</span>
-                </button>
-                <p className="text-[11px] text-center text-text-tertiary">
-                  Submit your GitHub repository when ready.
-                </p>
-              </div>
-            )}
+                  <PlayCircle className="w-4 h-4" />
+                  <span>Start Challenge</span>
+                </motion.button>
+              )}
 
-            {participantStatus === "Submitted" && (
-              <div className="space-y-2">
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 rounded-md bg-surface-sunken px-4 py-2 text-xs font-semibold text-text-primary hover:bg-border-primary transition-colors"
+              {participantStatus === "In Progress" && (
+                <motion.div 
+                  key="progress-sidebar"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-2 overflow-hidden"
                 >
-                  <Sparkles className="w-4 h-4 text-accent" />
-                  <span>Update Submission</span>
-                </button>
-                <p className="text-[11px] text-center text-emerald-600 font-medium">
-                  ✓ Solution received! Points awarded.
-                </p>
-              </div>
-            )}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsModalOpen(true)}
+                    className="w-full flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-500 transition-colors"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Submit Solution</span>
+                  </motion.button>
+                  <p className="text-[11px] text-center text-text-tertiary">
+                    Submit your GitHub repository when ready.
+                  </p>
+                </motion.div>
+              )}
+
+              {participantStatus === "Submitted" && (
+                <motion.div 
+                  key="submitted-sidebar"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-2 overflow-hidden"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsModalOpen(true)}
+                    className="w-full flex items-center justify-center gap-2 rounded-md bg-surface-sunken px-4 py-2 text-xs font-semibold text-text-primary hover:bg-border-primary transition-colors"
+                  >
+                    <Sparkles className="w-4 h-4 text-accent" />
+                    <span>Update Submission</span>
+                  </motion.button>
+                  <p className="text-[11px] text-center text-emerald-600 font-medium">
+                    ✓ Solution received! Points awarded.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <hr className="border-border-primary" />
 
@@ -393,7 +480,9 @@ export default function ChallengeDetails() {
             {/* Starter repo */}
             {challenge.starterRepo && (
               <div className="pt-2">
-                <a
+                <motion.a
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   href={challenge.starterRepo}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -402,7 +491,7 @@ export default function ChallengeDetails() {
                   <GithubIcon className="w-3.5 h-3.5" />
                   <span>Starter Template</span>
                   <ExternalLink className="w-3 h-3 text-text-tertiary" />
-                </a>
+                </motion.a>
               </div>
             )}
 
@@ -419,7 +508,7 @@ export default function ChallengeDetails() {
               </ul>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Modal */}
@@ -429,6 +518,6 @@ export default function ChallengeDetails() {
         onClose={() => setIsModalOpen(false)}
         onSuccess={refreshStatus}
       />
-    </div>
+    </motion.div>
   );
 }
